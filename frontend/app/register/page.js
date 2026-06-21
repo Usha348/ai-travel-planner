@@ -41,6 +41,7 @@ export default function Register() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
       >
+        <p style={{color: 'red', fontSize: '12px'}}>DEBUG: {process.env.NEXT_PUBLIC_API_URL}</p>
         <h1 className="text-2xl font-bold mb-6 text-center text-blue-600">
           Create Account
         </h1>
