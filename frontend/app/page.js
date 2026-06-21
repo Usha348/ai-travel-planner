@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
-  console.log('API URL is:', process.env.NEXT_PUBLIC_API_URL);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -45,7 +44,6 @@ export default function Login() {
         onSubmit={handleSubmit}
   className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
       >
-      <p style={{color: 'red', fontSize: '12px'}}>DEBUG: {process.env.NEXT_PUBLIC_API_URL}</p>
         <h1 className="text-2xl font-bold mb-6 text-center text-blue-600">
           AI Travel Planner
         </h1>
