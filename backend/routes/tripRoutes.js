@@ -8,6 +8,7 @@ const {
   updateTrip,
   deleteTrip,
   regenerateTripDay,
+  getPackingList,
 } = require('../controllers/tripController');
 
 // All these routes use 'protect' middleware — must be logged in
@@ -17,5 +18,6 @@ router.get('/:id', protect, getTripById);
 router.put('/:id', protect, updateTrip);
 router.delete('/:id', protect, deleteTrip);
 router.put('/:id/regenerate-day', protect, regenerateTripDay);
+router.get('/:id/packing-list', protect, getPackingList);
 
 module.exports = router;

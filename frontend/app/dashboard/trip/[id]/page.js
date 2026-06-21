@@ -8,6 +8,8 @@ export default function TripDetails() {
   const [loading, setLoading] = useState(true);
   const [regeneratingDay, setRegeneratingDay] = useState(null);
   const [preference, setPreference] = useState('');
+  const [packingList, setPackingList] = useState(null);
+  const [loadingPacking, setLoadingPacking] = useState(false);
   const params = useParams();
   const router = useRouter();
   const { id } = params;
@@ -111,6 +113,24 @@ export default function TripDetails() {
     }
   };
 
+  const handleGetPackingList = async () => {
+  setLoadingPacking(true);
+  const token = localStorage.getItem('token');
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/trips/${id}/packing-list`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = await res.json();
+    setPackingList(data.packingList);
+  } catch (err) {
+    console.error('Failed to get packing list', err);
+  } finally {
+    setLoadingPacking(false);
+  }
+};
+
   if (loading) {
     return <p className="text-center mt-10">Loading itinerary...</p>;
   }
@@ -199,6 +219,34 @@ export default function TripDetails() {
             </div>
           ))}
         </div>
+        {/* Packing List Section */}
+<div className="bg-white rounded-lg shadow p-6 mt-6">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-xl font-semibold">🎒 Smart Packing Checklist</h2>
+    <button
+      onClick={handleGetPackingList}
+      disabled={loadingPacking}
+      className="bg-purple-100 text-purple-700 px-4 py-2 rounded-md hover:bg-purple-200 disabled:opacity-50 text-sm"
+    >
+      {loadingPacking ? 'Generating...' : packingList ? 'Regenerate' : 'Generate Packing List'}
+    </button>
+  </div>
+
+  {packingList && (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {packingList.map((category) => (
+        <div key={category.category} className="bg-gray-50 rounded-md p-4">
+          <h3 className="font-semibold mb-2">{category.category}</h3>
+          <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+            {category.items.map((item, idx) => (
+              <li key={idx}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
       </div>
     </div>
   );

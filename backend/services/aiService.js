@@ -60,4 +60,34 @@ Return ONLY valid JSON (no markdown, no extra text) in exactly this format:
   return JSON.parse(cleanedText);
 };
 
-module.exports = { generateItinerary, regenerateDay };
+const generatePackingList = async (destination, days, interests, activities) => {
+  const prompt = `
+You are a travel packing assistant. Based on this trip, suggest a smart packing checklist.
+
+Destination: ${destination}
+Duration: ${days} days
+Interests: ${interests.join(', ')}
+Planned activities: ${activities.join(', ')}
+
+Return ONLY valid JSON (no markdown, no extra text) in exactly this format:
+{
+  "packingList": [
+    { "category": "Clothing", "items": ["item1", "item2"] },
+    { "category": "Electronics", "items": ["item1", "item2"] },
+    { "category": "Documents", "items": ["item1", "item2"] },
+    { "category": "Activity-Specific", "items": ["item1", "item2"] }
+  ]
+}
+`;
+
+  const completion = await groq.chat.completions.create({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'llama-3.3-70b-versatile',
+  });
+
+  const text = completion.choices[0].message.content;
+  const cleanedText = text.replace(/```json|```/g, '').trim();
+
+  return JSON.parse(cleanedText);
+};
+module.exports = { generateItinerary, regenerateDay, generatePackingList };

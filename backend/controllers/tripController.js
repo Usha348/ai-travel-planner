@@ -1,5 +1,5 @@
 const Trip = require('../models/Trip');
-const { generateItinerary, regenerateDay } = require('../services/aiService');
+const { generateItinerary, regenerateDay, generatePackingList } = require('../services/aiService');
 // CREATE a new trip
 
 const createTrip = async (req, res) => {
@@ -102,5 +102,27 @@ const regenerateTripDay = async (req, res) => {
   }
 };
 
+const getPackingList = async (req, res) => {
+  try {
+    const trip = await Trip.findOne({ _id: req.params.id, user: req.userId });
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
 
-module.exports = { createTrip, getMyTrips, getTripById, updateTrip, deleteTrip, regenerateTripDay };
+    // Collect all activities across all days for context
+    const allActivities = trip.itinerary.flatMap((day) => day.activities);
+
+    const packingData = await generatePackingList(
+      trip.destination,
+      trip.days,
+      trip.interests,
+      allActivities
+    );
+
+    res.status(200).json({ packingList: packingData.packingList });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = { createTrip, getMyTrips, getTripById, updateTrip, deleteTrip, regenerateTripDay, getPackingList };
